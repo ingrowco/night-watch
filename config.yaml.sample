@@ -1,0 +1,28 @@
+log:
+  level: info
+
+main:
+  interval: 30s
+  plugins:
+    - cpu
+    - disk
+    - loadavg
+    - memory
+    - network
+    - os
+    - uptime
+
+linux:
+  path:
+    cpu: /proc/stat
+    loadavg: /proc/loadavg
+    disk: /proc/diskstats
+    memory: /proc/meminfo
+    network: /proc/net/dev
+    uptime: /proc/uptime
+
+ingrow:
+  project:
+  stream:
+  apikey:
+  url:

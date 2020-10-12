@@ -1,0 +1,37 @@
+# .github/workflows/release.yaml
+
+name: Build Release
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  releases-matrix:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [ linux ]
+        goarch: [ "386", arm, amd64 ]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set APP_VERSION env
+        run: echo ::set-env name=APP_VERSION::$(echo ${GITHUB_REF} | rev | cut -d'/' -f 1 | rev )
+
+      - name: Set BUILD_TIME env
+        run: echo ::set-env name=BUILD_TIME::$(date --rfc-3339=seconds | sed 's/ /T/')
+
+      - name: Environment Printer
+        uses: managedkaos/print-env@v1.0
+
+      - uses: wangyoucao577/go-release-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: "https://dl.google.com/go/go1.15.2.linux-amd64.tar.gz"
+          project_path: "./cmd"
+          binary_name: "night-watch"
+          extra_files: "config.yaml.sample README.md"
+          ldflags: -X "main.appVersion=${{ env.APP_VERSION }}" -X "main.buildTime=${{ env.BUILD_TIME }}" -X main.gitCommit=${{ github.sha }} -s -w
