@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Config represent a configurator
 type Config interface {
 	Get(key string) interface{}
 	GetBool(key string) bool
@@ -35,10 +36,12 @@ func init() {
 	addConfigLayers(v)
 }
 
+// Get return an instance of global configurator
 func Get() *viper.Viper {
 	return v
 }
 
+// WithContext saves a configurator inside of a context
 func WithContext(ctx context.Context) context.Context {
 	if c := ctx.Value(configKey{}); c != nil {
 		return ctx
@@ -47,6 +50,7 @@ func WithContext(ctx context.Context) context.Context {
 	return context.WithValue(ctx, configKey{}, v)
 }
 
+// FromContext returns a configurator from a given context
 func FromContext(ctx context.Context) *viper.Viper {
 	return ctx.Value(configKey{}).(*viper.Viper)
 }

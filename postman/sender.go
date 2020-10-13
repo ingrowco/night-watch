@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -31,6 +30,7 @@ func newMessage(project, stream string, events map[string]interface{}) *message 
 	}
 }
 
+// Send submits an event (a map to strings to interfaces) to the ingrow system
 func Send(ctx context.Context, baseUrl, apiKey, project, stream string, stat map[string]interface{}) error {
 	event := newMessage(project, stream, stat)
 	data, err := json.Marshal(event)
@@ -57,7 +57,7 @@ func sender(ctx context.Context, baseUrl, apiKey string, data []byte) error {
 	}
 
 	if resp.StatusCode > 299 {
-		return errors.New(fmt.Sprintf("%d - %s", resp.StatusCode, http.StatusText(resp.StatusCode)))
+		return fmt.Errorf("%d - %s", resp.StatusCode, http.StatusText(resp.StatusCode))
 	}
 
 	return nil

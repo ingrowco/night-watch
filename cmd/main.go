@@ -11,8 +11,6 @@ import (
 	"github.com/ingrowco/night-watch/logger"
 	"github.com/ingrowco/night-watch/postman"
 	"github.com/ingrowco/night-watch/statistics"
-
-	_ "github.com/ingrowco/night-watch/configurator"
 )
 
 func main() {
@@ -38,10 +36,10 @@ func loop(ctx context.Context, tick <-chan time.Time) {
 	checkRequiredValue(ctx, "Stream", stream)
 	apiKey := configurator.FromContext(ctx).GetString("ingrow.apikey")
 	checkRequiredValue(ctx, "API Key", apiKey)
-	baseUrl := configurator.FromContext(ctx).GetString("ingrow.url")
-	checkRequiredValue(ctx, "Base Url", baseUrl)
+	baseURL := configurator.FromContext(ctx).GetString("ingrow.url")
+	checkRequiredValue(ctx, "Base Url", baseURL)
 
-	log := logger.FromContext(ctx).WithFields(map[string]interface{}{"project": project, "stream": stream, "baseurl": baseUrl})
+	log := logger.FromContext(ctx).WithFields(map[string]interface{}{"project": project, "stream": stream, "baseurl": baseURL})
 
 	for {
 		select {
@@ -57,7 +55,7 @@ func loop(ctx context.Context, tick <-chan time.Time) {
 				}
 				log.WithField("stats", stats).Trace("statistics has been generated")
 
-				err = postman.Send(ctx, baseUrl, apiKey, project, stream, stats)
+				err = postman.Send(ctx, baseURL, apiKey, project, stream, stats)
 				if err != nil {
 					log.Errorf("error on sending the event message, %v", err)
 					return

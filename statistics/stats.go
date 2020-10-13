@@ -9,6 +9,7 @@ import (
 	"github.com/ingrowco/night-watch/configurator"
 )
 
+// Stats is a type for collecting data. All keys are string and values can be any primitive type (in Ingrow system)
 type Stats map[string]interface{}
 
 type initializersMap map[string]func(Stats, string) error
@@ -23,6 +24,7 @@ var initializers = initializersMap{
 	"network": networkPopulate,
 }
 
+// Init collect data based on selected plugins
 func (s Stats) Init(ctx context.Context) error {
 	c := configurator.FromContext(ctx)
 	plugins := getPlugins(c.GetStringSlice("main.plugins"))
@@ -38,6 +40,7 @@ func (s Stats) Init(ctx context.Context) error {
 	return nil
 }
 
+// Get returns collected data
 func Get(ctx context.Context) (Stats, error) {
 	stats := make(Stats)
 

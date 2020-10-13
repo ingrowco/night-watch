@@ -12,6 +12,7 @@ import (
 
 type loggerKey struct{}
 
+// WithContext saves the logger inside of a given context
 func WithContext(ctx context.Context) context.Context {
 	if l := ctx.Value(loggerKey{}); l != nil {
 		return ctx
@@ -20,17 +21,19 @@ func WithContext(ctx context.Context) context.Context {
 	return context.WithValue(ctx, loggerKey{}, newLogger(ctx, os.Stderr))
 }
 
+// FromContext returns a saved logger that saved inside a context. If there is no logger has been saved, it will be panic
 func FromContext(ctx context.Context) *logrus.Logger {
 	return ctx.Value(loggerKey{}).(*logrus.Logger)
 }
 
-func New(output io.Writer, formatter logrus.Formatter, hooks logrus.LevelHooks, level string, exitFunc func(int), reportCaller bool) *logrus.Logger {
+// New creates an instance of logger
+func New(output io.Writer, formatter logrus.Formatter, level string, reportCaller bool) *logrus.Logger {
 	logger := &logrus.Logger{
 		Out:          output,
 		Formatter:    formatter,
-		Hooks:        hooks,
+		Hooks:        make(logrus.LevelHooks),
 		Level:        getLevel(level),
-		ExitFunc:     exitFunc,
+		ExitFunc:     os.Exit,
 		ReportCaller: reportCaller,
 	}
 
@@ -41,9 +44,7 @@ func newLogger(ctx context.Context, output io.Writer) *logrus.Logger {
 	return New(
 		output,
 		new(logrus.TextFormatter),
-		make(logrus.LevelHooks),
 		configurator.FromContext(ctx).GetString("log.level"),
-		os.Exit,
 		false,
 	)
 }
