@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/ingrowco/night-watch/configurator"
 )
 
 type lungo struct {
@@ -42,6 +44,8 @@ func Send(ctx context.Context, baseUrl, apiKey, project, stream string, stat map
 }
 
 func sender(ctx context.Context, baseUrl, apiKey string, data []byte) error {
+	cfg := configurator.FromContext(ctx)
+
 	r, err := http.NewRequestWithContext(ctx, "POST", baseUrl+"/events", bytes.NewBuffer(data))
 	if err != nil {
 		return err
@@ -49,7 +53,9 @@ func sender(ctx context.Context, baseUrl, apiKey string, data []byte) error {
 
 	r.Header.Set("api-key", apiKey)
 
-	client := http.Client{}
+	client := http.Client{
+		Timeout: cfg.GetDuration("main.timeout"),
+	}
 
 	resp, err := client.Do(r)
 	if err != nil {

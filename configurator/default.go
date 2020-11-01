@@ -79,6 +79,7 @@ func setDefaultValues(c *viper.Viper) {
 
 	// Main
 	c.SetDefault("main.interval", "30s")
+	c.SetDefault("main.timeout", "5s")
 	c.SetDefault("main.plugins", "os,cpu,disk,uptime,memory,loadavg,network")
 
 	// Ingrow Admin Options
