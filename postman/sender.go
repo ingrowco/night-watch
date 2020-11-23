@@ -1,12 +1,12 @@
 package postman
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"strings"
+	"time"
+
+	http "github.com/valyala/fasthttp"
 
 	"github.com/ingrowco/night-watch/configurator"
 )
@@ -47,25 +47,39 @@ func Send(ctx context.Context, baseUrl, apiKey, project, stream string, stat map
 func sender(ctx context.Context, baseUrl, apiKey string, data []byte) error {
 	cfg := configurator.FromContext(ctx)
 
-	r, err := http.NewRequestWithContext(ctx, "POST", strings.TrimRight(baseUrl, "/")+"/v1", bytes.NewBuffer(data))
+	req := http.AcquireRequest()
+	defer http.ReleaseRequest(req)
+	resp := http.AcquireResponse()
+	defer http.ReleaseResponse(resp)
+
+	req.SetRequestURI(baseUrl)
+	req.SetBody(data)
+	req.Header.Set("api-key", apiKey)
+	req.Header.SetMethod("POST")
+
+	err := getClient(cfg.GetDuration("main.timeout")).Do(req, resp)
 	if err != nil {
 		return err
 	}
 
-	r.Header.Set("api-key", apiKey)
-
-	client := http.Client{
-		Timeout: cfg.GetDuration("main.timeout"),
-	}
-
-	resp, err := client.Do(r)
-	if err != nil {
-		return err
-	}
-
-	if resp.StatusCode > 299 {
-		return fmt.Errorf("%d - %s", resp.StatusCode, http.StatusText(resp.StatusCode))
+	respCode := resp.Header.StatusCode()
+	if respCode > 299 {
+		return fmt.Errorf("%d - %s", respCode, http.StatusMessage(respCode))
 	}
 
 	return nil
+}
+
+var httpClient *http.Client
+
+func getClient(timeout time.Duration) *http.Client {
+	if httpClient != nil {
+		return httpClient
+	}
+	httpClient = &http.Client{
+		Name:        fmt.Sprintf("niw-%s", configurator.AppVersion),
+		ReadTimeout: timeout,
+	}
+
+	return httpClient
 }

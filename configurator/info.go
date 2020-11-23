@@ -1,4 +1,4 @@
-package main
+package configurator
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	appVersion string
-	buildTime  string
-	gitCommit  string
+	AppVersion string
+	BuildTime  string
+	GitCommit  string
 )
 
 const niw = `888b    888 d8b 888       888 
@@ -20,16 +20,16 @@ const niw = `888b    888 d8b 888       888
 888   Y8888 888 8888P   Y8888 
 888    Y888 888 888P     Y888`
 
-func printBuildInformation() {
-	buildDate, _ := time.Parse(time.RFC3339, buildTime)
+func PrintBuildInformation() {
+	buildDate, _ := time.Parse(time.RFC3339, BuildTime)
 
 	fmt.Println(niw)
 	fmt.Printf(
 		"Version:\t\t%s\n"+
 			"Build Commit:\t\t%s\n"+
 			"Build Date:\t\t%s\n",
-		appVersion,
-		gitCommit,
+		AppVersion,
+		GitCommit,
 		buildDate.UTC(),
 	)
 }

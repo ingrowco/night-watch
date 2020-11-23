@@ -34,4 +34,4 @@ jobs:
           project_path: "./cmd"
           binary_name: "night-watch"
           extra_files: "config.yaml.sample README.md"
-          ldflags: -X "main.appVersion=${{ env.APP_VERSION }}" -X "main.buildTime=${{ env.BUILD_TIME }}" -X main.gitCommit=${{ github.sha }} -s -w
+          ldflags: -X "github.com/ingrowco/night-watch/configurator.AppVersion=${{ env.APP_VERSION }}" -X "github.com/ingrowco/night-watch/configurator.BuildTime=${{ env.BUILD_TIME }}" -X github.com/ingrowco/night-watch/configurator.GitCommit=${{ github.sha }} -s -w

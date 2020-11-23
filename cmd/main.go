@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	printBuildInformation()
+	configurator.PrintBuildInformation()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	ctx = configurator.WithContext(ctx)
@@ -38,6 +38,7 @@ func loop(ctx context.Context, tick <-chan time.Time) {
 	checkRequiredValue(ctx, "API Key", apiKey)
 	baseURL := configurator.FromContext(ctx).GetString("ingrow.url")
 	checkRequiredValue(ctx, "Base Url", baseURL)
+	baseURL = strings.TrimRight(baseURL, "/") + "/v1"
 
 	log := logger.FromContext(ctx).WithFields(map[string]interface{}{"project": project, "stream": stream, "baseurl": baseURL})
 
