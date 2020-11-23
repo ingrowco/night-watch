@@ -3,6 +3,7 @@ log:
 
 main:
   interval: 30s
+  timeout: 5s
   plugins:
     - cpu
     - disk

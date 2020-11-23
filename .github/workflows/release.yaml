@@ -17,13 +17,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set APP_VERSION env
-        run: echo ::set-env name=APP_VERSION::$(echo ${GITHUB_REF} | rev | cut -d'/' -f 1 | rev )
+        run: echo "APP_VERSION=$(echo ${GITHUB_REF} | rev | cut -d'/' -f 1 | rev )" >> $GITHUB_ENV
 
       - name: Set BUILD_TIME env
-        run: echo ::set-env name=BUILD_TIME::$(date --rfc-3339=seconds | sed 's/ /T/')
-
-      - name: Environment Printer
-        uses: managedkaos/print-env@v1.0
+        run: echo "BUILD_TIME=$(date --rfc-3339=seconds | sed 's/ /T/')" >> $GITHUB_ENV
 
       - uses: wangyoucao577/go-release-action@master
         with:
