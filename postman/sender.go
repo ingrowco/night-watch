@@ -11,7 +11,7 @@ import (
 	"github.com/ingrowco/night-watch/configurator"
 )
 
-type lungo struct {
+type ingrow struct {
 	Project string `json:"project"`
 	Stream  string `json:"stream"`
 }
@@ -19,13 +19,13 @@ type lungo struct {
 type event map[string]interface{}
 
 type message struct {
-	Lungo *lungo `json:"lungo"`
-	Event event  `json:"event"`
+	Lungo *ingrow `json:"ingrow"`
+	Event event   `json:"event"`
 }
 
 func newMessage(project, stream string, events map[string]interface{}) *message {
 	return &message{
-		Lungo: &lungo{
+		Lungo: &ingrow{
 			Project: project,
 			Stream:  stream,
 		},
